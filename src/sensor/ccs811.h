@@ -25,8 +25,14 @@ extern unsigned short ccs811_co2(void);
  */
 extern unsigned short ccs811_tvoc(void);
 
+/** Not an error. The one-second sample is not ready, and the last CO2 value
+ *  stays in place.
+ */
+#define CCS811_NOT_READY ((unsigned char)(1u << 7))
+
 /** @brief Read measurement data from CCS811.
- *  @return Zero if successful, error ID otherwise.
+ *  @return Zero on success, CCS811_NOT_READY when no new sample is ready,
+ *          or an error ID otherwise.
  */
 extern unsigned char ccs811_read_data(void);
 

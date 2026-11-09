@@ -24,8 +24,14 @@ static unsigned char ccs811_err = 0; /* Error for CO2 sensor */
 void register_sensor_fault(sensor_data_t *sd);
 
 unsigned char take_measurements(void) {
+  unsigned char ccs811_status;
+
   am2320_err = !am2320_read();
-  ccs811_err = !!ccs811_read_data();
+  ccs811_status = ccs811_read_data();
+  /* A gap between one-second samples is not a sensor failure. */
+  if (ccs811_status != CCS811_NOT_READY) {
+    ccs811_err = !!ccs811_status;
+  }
 
   return (am2320_err || ccs811_err);
 }

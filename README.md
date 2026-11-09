@@ -10,7 +10,7 @@ The score is the point of the device. CO2, humidity, temperature, and sound pres
 - Sound pressure from the ADC, using a logarithmic fit in `src/sensor/spl.c`.
 - An LDR reading that scales LED brightness.
 - Per-sensor scores and an ICQ value, implemented in `src/app/climate_evaluator.c`.
-- PWM drive for a red, white, and blue LED. A healthy score sets red to `255 - icq` and white to `icq`. A sensor fault turns the LED off. The network-fault colour in `emit_color` is blue; `main` leaves `network_fault` at 0.
+- PWM drive for a red, white, and blue LED. A healthy score sets red to `255 - icq` and white to `icq`. A fault on any of the four sensors turns the LED off on that pass. A CCS811 sample that is not ready yet keeps the last CO2 reading and is not a fault. The network-fault colour in `emit_color` is blue; `main` leaves `network_fault` at 0.
 - A 15-byte I2C packet to a communication module at 7-bit address `0x01`.
 - UART debug text at about 4800 baud, 8N1, while the CPU runs at 1 MHz.
 
