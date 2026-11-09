@@ -99,8 +99,8 @@ unsigned char ccs811_start(void) {
 
 unsigned char ccs811_read_data(void) {
   if (!available())
-    /* Return 2^7 as unavailable, as 0 denotes success from chip */
-    return (1 << 7);
+    /* Zero denotes success from the chip, so not-ready is a distinct code. */
+    return CCS811_NOT_READY;
   else {
     unsigned char buf[8];
     /* Read result data */

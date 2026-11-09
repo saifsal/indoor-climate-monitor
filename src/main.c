@@ -116,13 +116,13 @@ int main(void) {
             sc[SoundPL].value, vd.icq);
     uart_transmit_string(buffer);*/
 
-    emit_color(&vd);
-
     unsigned char sensor_fault = 0;
     for (unsigned char i = 0; i < 4; ++i) {
-      sensor_fault |= sd[0].fault;
+      sensor_fault |= sd[i].fault;
     }
     vd.sensor_fault = sensor_fault;
+
+    emit_color(&vd);
 
     cloud_setup(&cd, sd, sc, &vd, &nd);
     send_data(&cd);

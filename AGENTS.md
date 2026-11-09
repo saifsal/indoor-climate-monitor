@@ -94,8 +94,8 @@ Local tools are the makefile, the AVR toolchain, `avrdude`, and `clang-format`. 
 - `make fuse` writes the Arduino Uno fuse bytes. Run it only when that clock configuration is intended.
 - `main` waits in `loop_until_bit_is_clear(PIND, PIND2)` before `init()`. PD2 is an input with its pull-up enabled, so startup waits until that pin reads low.
 - `live()` toggles PB5 and does not delay, even though its comment says it waits 500 ms. PB5 is also SPI SCK. SPI is initialised, and `spi_transfer` is never called.
-- Sensor fault is applied one pass later. `emit_color` runs before `main` stores `vd.sensor_fault`, and that store always ORs `sd[0].fault` rather than `sd[i].fault`. Only the CO2 slot can turn the fault LED path on.
-- `ccs811_read_data` returns `128` when a one-second sample is not ready. That sets the CO2 fault. Because the loop does not wait, CO2 is faulted on most passes.
+- `main` ORs every sensor slot into `vd.sensor_fault` before `emit_color`, so a fault on CO2, humidity, sound pressure, or temperature turns the fault LED off on that pass.
+- `ccs811_read_data` returns `CCS811_NOT_READY` (`128`) when a one-second sample is not ready. That return leaves the previous CO2 error flag unchanged and keeps the last CO2 sample, so the gap between samples is not a sensor fault. Any other non-zero return is a fault and stays set until a later read returns 0. `ccs811_co2()` stays at the initial 400 ppm until the first successful read.
 - `push_data` always returns `1` and ignores I2C status. `send_data` retries only when `push_data` returns `0`, so that loop is skipped. `network_data_t.fault` stays `0`, so `main` keeps the network-fault colour (blue) unselected.
 - `save_icq_parameters` has an empty body. Limits are the constants in `scale_setup`.
 - Scale and sensor arrays are paired by index, not by `id_t`: 0 CO2, 1 humidity, 2 sound pressure, 3 temperature.
